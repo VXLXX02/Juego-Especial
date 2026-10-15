@@ -1,0 +1,2381 @@
+<!DOCTYPE html><html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0"><title>DANI.EXE — The Birthday Quest 💗</title><style>
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+body{
+    min-height:100vh;
+    font-family:"Trebuchet MS",Arial,sans-serif;
+    background:
+        radial-gradient(circle at top,#eb82e5 0%,#04d9f5 55%,#090711 100%);
+    color:white;
+    overflow-x:hidden;
+}
+
+button{
+    font-family:inherit;
+}
+
+.particles{
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    overflow:hidden;
+    z-index:0;
+}
+
+.particle{
+    position:absolute;
+    animation:caer linear infinite;
+    opacity:.8;
+}
+
+@keyframes caer{
+    from{
+        transform:translateY(-50px) rotate(0deg);
+    }
+    to{
+        transform:translateY(110vh) rotate(360deg);
+    }
+}
+
+#game{
+    position:relative;
+    z-index:2;
+    width:100%;
+    max-width:900px;
+    margin:auto;
+    padding:20px;
+}
+
+.screen{
+    display:none;
+    animation:aparecer .45s ease;
+}
+
+.screen.active{
+    display:block;
+}
+
+@keyframes aparecer{
+    from{
+        opacity:0;
+        transform:translateY(15px) scale(.98);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0) scale(1);
+    }
+}
+
+/* =========================
+   INTRO
+========================= */
+
+.intro{
+    min-height:90vh;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+}
+
+.logo{
+    font-size:clamp(45px,10vw,85px);
+    font-weight:900;
+    color:#f78ef1;
+    text-shadow:
+        0 0 10px #1d1619,
+        0 0 30px #f8f8f8;
+    animation:latido 1.5s infinite;
+}
+
+@keyframes latido{
+    0%,100%{transform:scale(1);}
+    50%{transform:scale(1.07);}
+}
+
+.system{
+    margin-top:20px;
+    padding:18px;
+    width:100%;
+    max-width:550px;
+    background:rgba(15,10,25,.85);
+    border:1px solid #754d72;
+    border-radius:18px;
+    text-align:left;
+    font-family:monospace;
+    color:#d6ffea;
+    box-shadow:0 0 30px rgba(255,82,170,.15);
+}
+
+.system span{
+    color:#d88de7;
+}
+
+.start-button{
+    margin-top:25px;
+    padding:16px 35px;
+    border:none;
+    border-radius:50px;
+    background:linear-gradient(135deg,#5fe7ff,#a64fff);
+    color:rgb(255, 253, 253);
+    font-size:18px;
+    font-weight:bold;
+    cursor:pointer;
+    box-shadow:0 0 25px rgba(255,92,180,.45);
+    transition:.25s;
+}
+
+.start-button:hover{
+    transform:translateY(-3px) scale(1.04);
+}
+
+/* =========================
+   MAPA
+========================= */
+
+.header{
+    text-align:center;
+    margin-bottom:25px;
+}
+
+.header h1{
+    color:#000000;
+    font-size:clamp(28px,7vw,45px);
+}
+
+.header p{
+    color:#0583eb;
+    margin-top:6px;
+}
+
+.level{
+    display:inline-block;
+    margin-top:12px;
+    padding:7px 15px;
+    border-radius:30px;
+    background:#000000;
+    color:#ff9dce;
+    border:1px solid #653b5d;
+}
+
+.worlds{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:18px;
+}
+
+.world{
+    min-height:210px;
+    border-radius:25px;
+    padding:22px;
+    cursor:pointer;
+    border:1px solid rgba(255,255,255,.12);
+    position:relative;
+    overflow:hidden;
+    transition:.3s;
+}
+
+.world:hover{
+    transform:translateY(-6px) rotate(-1deg);
+}
+
+.world.locked{
+    filter:grayscale(.8);
+    opacity:.55;
+    cursor:not-allowed;
+}
+
+.world.completed{
+    border:2px solid #ff91c7;
+}
+
+.world-number{
+    font-size:13px;
+    opacity:.75;
+}
+
+.world-icon{
+    font-size:58px;
+    margin:10px 0;
+}
+
+.world h2{
+    font-size:22px;
+}
+
+.world p{
+    margin-top:7px;
+    font-size:14px;
+    opacity:.8;
+}
+
+.world-kimetsu{
+    background:linear-gradient(145deg,#f39f21,#6851ac);
+}
+
+.world-clover{
+    background:linear-gradient(145deg,#214b43,#172b32);
+}
+
+.world-solo{
+    background:linear-gradient(145deg,#4673f0,#11121e);
+}
+
+.world-music{
+    background:linear-gradient(145deg,#e791e7,#84e7eb);
+}
+
+.lock{
+    position:absolute;
+    right:18px;
+    top:18px;
+    font-size:22px;
+}
+
+/* =========================
+   MISIONES
+========================= */
+
+.mission{
+    background:rgba(3, 3, 3, 0.94);
+    border:1px solid #65405f;
+    border-radius:25px;
+    padding:25px;
+}
+
+.mission-title{
+    text-align:center;
+    font-size:30px;
+    color:#ffd6eb;
+    margin-bottom:8px;
+}
+
+.mission-subtitle{
+    text-align:center;
+    color:#cdb5cb;
+    margin-bottom:25px;
+}
+
+/* =========================
+   PERSONAJES
+========================= */
+
+.character-box{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:20px;
+    margin:15px auto 20px;
+    min-height:190px;
+    max-width:650px;
+    padding:15px;
+    border-radius:22px;
+    background:linear-gradient(145deg,rgba(70,35,70,.85),rgba(20,14,32,.9));
+    border:1px solid rgba(255,150,210,.25);
+    box-shadow:0 0 30px rgba(255,70,170,.12);
+}
+
+.character-image{
+    width:145px;
+    height:170px;
+    object-fit:contain;
+    filter:drop-shadow(0 10px 12px rgba(0,0,0,.4));
+    animation:characterFloat 2s ease-in-out infinite;
+}
+
+@keyframes characterFloat{
+    0%,100%{
+        transform:translateY(0);
+    }
+    50%{
+        transform:translateY(-7px);
+    }
+}
+
+.character-fallback{
+    width:145px;
+    height:170px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:100px;
+}
+
+.character-info{
+    text-align:left;
+}
+
+.character-name{
+    font-size:25px;
+    color:#ffd3e9;
+    font-weight:bold;
+}
+
+.character-speech{
+    margin-top:8px;
+    color:#d8c4d5;
+    line-height:1.5;
+}
+
+/* =========================
+   PREGUNTAS
+========================= */
+
+.question-number{
+    text-align:center;
+    color:#ff8fc5;
+    font-size:14px;
+    margin-bottom:5px;
+}
+
+.question{
+    font-size:20px;
+    text-align:center;
+    line-height:1.5;
+    margin:20px 0;
+}
+
+.answers{
+    display:grid;
+    gap:12px;
+}
+
+.answer{
+    min-height:55px;
+    border-radius:16px;
+    border:1px solid #694362;
+    background:#291a32;
+    color:white;
+    cursor:pointer;
+    padding:12px;
+    font-size:16px;
+    transition:.2s;
+}
+
+.answer:hover{
+    background:#3b2344;
+    transform:scale(1.02);
+}
+
+.answer.good{
+    background:#174a39;
+    border-color:#61e0ac;
+}
+
+.answer.bad{
+    background:#56263b;
+    border-color:#ff759c;
+}
+
+.answer:disabled{
+    cursor:default;
+}
+
+.feedback{
+    text-align:center;
+    min-height:35px;
+    margin-top:15px;
+    color:#ffd1e5;
+    line-height:1.5;
+}
+
+.continue{
+    display:none;
+    margin:15px auto 0;
+    padding:13px 25px;
+    border:none;
+    border-radius:30px;
+    background:#c0528b;
+    color:white;
+    cursor:pointer;
+    font-size:16px;
+}
+
+.quiz-box{
+    margin-top:20px;
+}
+
+/* =========================
+   KIMETSU
+========================= */
+
+.kimetsu{
+    background:linear-gradient(180deg,#25192f,#401f38);
+}
+
+.petal-area{
+    height:250px;
+    position:relative;
+    overflow:hidden;
+    border-radius:18px;
+    background:radial-gradient(circle,#5a304f,#21162c);
+    border:1px solid #68425e;
+    margin:20px 0;
+}
+
+.petal{
+    position:absolute;
+    font-size:25px;
+    cursor:pointer;
+    user-select:none;
+    animation:petalMove 2s infinite alternate;
+}
+
+@keyframes petalMove{
+    from{
+        transform:translateY(0) rotate(0deg);
+    }
+    to{
+        transform:translateY(8px) rotate(25deg);
+    }
+}
+
+.score{
+    text-align:center;
+    font-size:20px;
+    color:#ffb9d9;
+}
+
+/* =========================
+   CLOVER
+========================= */
+
+.clover-book{
+    width:150px;
+    height:190px;
+    margin:20px auto;
+    background:linear-gradient(135deg,#5d4bba,#261c62);
+    border-radius:8px 18px 18px 8px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:80px;
+    box-shadow:8px 8px 0 #181231;
+    cursor:pointer;
+    transition:.3s;
+}
+
+.clover-book:hover{
+    transform:rotate(-3deg) scale(1.04);
+}
+
+.magic{
+    text-align:center;
+    font-size:35px;
+    min-height:45px;
+}
+
+/* =========================
+   SOLO
+========================= */
+
+.status-window{
+    background:#0c1020;
+    border:1px solid #435a9c;
+    border-radius:18px;
+    padding:20px;
+    font-family:monospace;
+    color:#a8c9ff;
+    box-shadow:0 0 25px rgba(78,132,255,.15);
+}
+
+.stat{
+    margin:10px 0;
+}
+
+.stat-bar{
+    height:10px;
+    background:#1c2540;
+    border-radius:20px;
+    overflow:hidden;
+}
+
+.stat-fill{
+    height:100%;
+    background:linear-gradient(90deg,#507dff,#b58cff);
+    width:0%;
+    transition:width .5s;
+}
+
+.enemy{
+    text-align:center;
+    font-size:90px;
+    margin:25px;
+    cursor:pointer;
+    user-select:none;
+    transition:.1s;
+}
+
+.enemy.hit{
+    transform:scale(.8) rotate(10deg);
+}
+
+/* =========================
+   MUSIC
+========================= */
+
+.music-player{
+    background:linear-gradient(145deg,#322039,#1b1224);
+    border:1px solid #70435f;
+    border-radius:25px;
+    padding:25px;
+    text-align:center;
+}
+
+.album{
+    width:190px;
+    height:190px;
+    margin:auto;
+    border-radius:20px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:linear-gradient(135deg,#8a4a78,#342052);
+    font-size:70px;
+    box-shadow:0 15px 30px rgba(0,0,0,.35);
+}
+
+.song-title{
+    margin-top:20px;
+    font-size:23px;
+    color:#ffd5e9;
+}
+
+.song-subtitle{
+    color:#c9adbf;
+    margin-top:5px;
+}
+
+.music-button{
+    margin-top:20px;
+    padding:13px 25px;
+    border:none;
+    border-radius:30px;
+    background:#bd558b;
+    color:white;
+    cursor:pointer;
+}
+
+.music-note{
+    font-size:35px;
+    margin-top:20px;
+    animation:musicFloat 1s infinite alternate;
+}
+
+@keyframes musicFloat{
+    to{
+        transform:translateY(-8px) rotate(8deg);
+    }
+}
+
+/* =========================
+   FINAL
+========================= */
+
+.final{
+    text-align:center;
+    padding:30px 10px;
+}
+
+.final-cake{
+    font-size:clamp(70px,20vw,120px);
+    animation:cakeFloat 2s infinite alternate;
+}
+
+@keyframes cakeFloat{
+    to{
+        transform:translateY(-8px) rotate(2deg);
+    }
+}
+
+.final h1{
+    font-size:clamp(32px,8vw,55px);
+    color:#f37ab8;
+    text-shadow:0 0 20px #202020;
+}
+
+.final h2{
+    margin-top:10px;
+    color:#f8f7f8;
+}
+
+.letter{
+    max-width:650px;
+    margin:25px auto;
+    padding:25px;
+    text-align:left;
+    line-height:1.8;
+    background:rgba(57,29,52,.9);
+    border:1px solid #754661;
+    border-radius:20px;
+    color:#ffe5f2;
+}
+
+.letter strong{
+    color:#ff9dcc;
+}
+
+.restart{
+    margin-top:20px;
+    padding:13px 25px;
+    border:none;
+    border-radius:30px;
+    background:#c0528b;
+    color:white;
+    cursor:pointer;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media(max-width:650px){
+
+    #game{
+        padding:12px;
+    }
+
+    .worlds{
+        grid-template-columns:1fr;
+    }
+
+    .world{
+        min-height:175px;
+    }
+
+    .mission{
+        padding:18px;
+    }
+
+    .character-box{
+        flex-direction:column;
+        text-align:center;
+    }
+
+    .character-info{
+        text-align:center;
+    }
+
+}
+
+</style></head><body><div class="particles" id="particles"></div><main id="game"><!-- =====================================================
+     INTRO
+===================================================== --><section id="intro" class="screen active intro"><div class="logo">
+    IN EVERY UNIVERSE,IT'S YOU
+</div>
+
+<div class="system">
+
+    > SISTEMA INICIADO...
+
+    <br><br>
+
+    > Jugador detectado:
+    <span>DANIELA</span>
+
+    <br>
+
+    > Nivel actual:
+    <span>24</span>
+
+    <br>
+
+    > Clase:
+    <span>MUJER DE MI VIDA</span>
+
+    <br>
+
+    > Misión:
+    <span>SOBREVIVIR A SU CUMPLEAÑOS O A MIS LOCURAS</span>
+
+    <br><br>
+
+    > Recompensa:
+    <span>???</span>
+
+</div>
+
+<button class="start-button" id="start">
+    ✨ COMENZAR AVENTURA ✨
+</button>
+
+</section><!-- =====================================================
+     MAPA
+===================================================== --><section id="map" class="screen"><div class="header">
+
+    <h1>
+        🌸 MAPA DE LA AVENTURA 🍀
+    </h1>
+
+    <p>
+        Completá los mundos para desbloquear
+        la sorpresa final.
+    </p>
+
+    <div class="level">
+        NIVEL DE DANI:
+        <strong id="mapLevel">24</strong>
+    </div>
+
+</div>
+
+<div class="worlds">
+
+    <div class="world world-kimetsu" id="world1">
+
+        <div class="world-number">
+            WORLD 01
+        </div>
+
+        <div class="world-icon">
+            🌸⚔️
+        </div>
+
+        <h2>
+            Kimetsu World
+        </h2>
+
+        <p>
+            Una misión junto a los cazadores.
+        </p>
+
+    </div>
+
+
+    <div class="world world-clover locked" id="world2">
+
+        <div class="lock">
+            🔒
+        </div>
+
+        <div class="world-number">
+            WORLD 02
+        </div>
+
+        <div class="world-icon">
+            🍀📖
+        </div>
+
+        <h2>
+            Black Clover World
+        </h2>
+
+        <p>
+            Asta y Yuno necesitan tu ayuda.
+        </p>
+
+    </div>
+
+
+    <div class="world world-solo locked" id="world3">
+
+        <div class="lock">
+            🔒
+        </div>
+
+        <div class="world-number">
+            WORLD 03
+        </div>
+
+        <div class="world-icon">
+            🗡️👤
+        </div>
+
+        <h2>
+            Shadow World
+        </h2>
+
+        <p>
+            El Sistema te está observando.
+        </p>
+
+    </div>
+
+
+    <div class="world world-music locked" id="world4">
+
+        <div class="lock">
+            🔒
+        </div>
+
+        <div class="world-number">
+            WORLD 04
+        </div>
+
+        <div class="world-icon">
+            💌 💌 
+        </div>
+
+        <h2>
+            Mini Carta 💚
+        </h2>
+
+        <p>
+            Te lo ganaste, tenes que leerla.
+        </p>
+
+    </div>
+
+</div>
+
+</section><!-- =====================================================
+     KIMETSU
+===================================================== --><section id="kimetsu" class="screen"><div class="mission kimetsu"><h1 class="mission-title">
+    🌸 Kimetsu World 🌸
+</h1>
+
+<p class="mission-subtitle">
+    Atrapa los pétalos y luego superá
+    las 3 preguntas.
+</p>
+
+<div class="score" id="petalScore">
+    Pétalos: 0 / 7
+</div>
+
+<div class="petal-area" id="petalArea"></div>
+
+<div class="feedback" id="petalFeedback">
+    Tocá los 🌸 antes de que desaparezcan.
+</div>
+
+<div id="kimetsuQuiz" class="quiz-box" style="display:none;">
+
+    <div class="question-number" id="kimetsuQuestionNumber">
+        PREGUNTA 1 / 3
+    </div>
+
+    <div class="character-box">
+
+        <img
+            id="kimetsuCharacter"
+            class="character-image"
+            src="personajes/tanjiro.png"
+            alt="Tanjiro"
+            onerror="this.style.display='none';document.getElementById('kimetsuFallback').style.display='flex';">
+
+        <div
+            id="kimetsuFallback"
+            class="character-fallback"
+            style="display:none;">
+            ⚔️
+        </div>
+
+        <div class="character-info">
+
+            <div
+                class="character-name"
+                id="kimetsuCharacterName">
+                Tanjiro
+            </div>
+
+            <div
+                class="character-speech"
+                id="kimetsuSpeech">
+                Dani, necesito saber si estás preparada.
+            </div>
+
+        </div>
+
+    </div>
+
+    <div
+        class="question"
+        id="kimetsuQuestion">
+    </div>
+
+    <div
+        class="answers"
+        id="kimetsuAnswers">
+    </div>
+
+    <div
+        class="feedback"
+        id="kimetsuQuizFeedback">
+    </div>
+
+</div>
+
+<button class="continue" id="kimetsuContinue">
+    Volver al mapa →
+</button>
+
+</div></section><!-- =====================================================
+     BLACK CLOVER
+===================================================== --><section id="clover" class="screen"><div class="mission"><h1 class="mission-title">
+    🍀 Black Clover World
+</h1>
+
+<p class="mission-subtitle">
+    El grimorio te eligió.
+    Ahora Asta y Yuno tienen 3 pruebas para vos.
+</p>
+
+<div
+    class="clover-book"
+    id="grimoire">
+    🍀
+</div>
+
+<div
+    class="magic"
+    id="magicText">
+    Tocá el grimorio.
+</div>
+
+<div
+    id="cloverQuiz"
+    class="quiz-box"
+    style="display:none;">
+
+    <div
+        class="question-number"
+        id="cloverQuestionNumber">
+        PREGUNTA 1 / 3
+    </div>
+
+    <div class="character-box">
+
+        <img
+            id="cloverCharacter"
+            class="character-image"
+            src="personajes/asta.png"
+            alt="Asta"
+            onerror="this.style.display='none';document.getElementById('cloverFallback').style.display='flex';">
+
+        <div
+            id="cloverFallback"
+            class="character-fallback"
+            style="display:none;">
+            🍀
+        </div>
+
+        <div class="character-info">
+
+            <div
+                class="character-name"
+                id="cloverCharacterName">
+                Asta
+            </div>
+
+            <div
+                class="character-speech"
+                id="cloverSpeech">
+                ¡Dani! ¡Demostrá de qué estás hecha!
+            </div>
+
+        </div>
+
+    </div>
+
+    <div
+        class="question"
+        id="cloverQuestion">
+    </div>
+
+    <div
+        class="answers"
+        id="cloverAnswers">
+    </div>
+
+    <div
+        class="feedback"
+        id="cloverQuizFeedback">
+    </div>
+
+</div>
+
+<button class="continue" id="cloverContinue">
+    Volver al mapa →
+</button>
+
+</div></section><!-- =====================================================
+     SOLO LEVELING
+===================================================== --><section id="solo" class="screen"><div class="mission"><h1 class="mission-title">
+    🗡️ Shadow World
+</h1>
+
+<p class="mission-subtitle">
+    Derrotá al enemigo y completá
+    las 3 pruebas del Sistema.
+</p>
+
+<div class="status-window">
+
+    <div>
+        PLAYER:
+        <strong>DANIELA</strong>
+    </div>
+
+    <br>
+
+    <div class="stat">
+
+        HP
+
+        <div class="stat-bar">
+
+            <div
+                class="stat-fill"
+                id="enemyHP">
+            </div>
+
+        </div>
+
+    </div>
+
+    <div>
+        LEVEL:
+        <span id="soloLevel">24</span>
+    </div>
+
+</div>
+
+<div
+    class="enemy"
+    id="enemy">
+    👹
+</div>
+
+<div
+    class="feedback"
+    id="soloFeedback">
+    Tocá al enemigo para atacar.
+</div>
+
+<div
+    id="soloQuiz"
+    class="quiz-box"
+    style="display:none;">
+
+    <div
+        class="question-number"
+        id="soloQuestionNumber">
+        PREGUNTA 1 / 3
+    </div>
+
+    <div class="character-box">
+
+        <img
+            id="soloCharacter"
+            class="character-image"
+            src="personajes/jinwoo.png"
+            alt="Sung Jin-Woo"
+            onerror="this.style.display='none';document.getElementById('soloFallback').style.display='flex';">
+
+        <div
+            id="soloFallback"
+            class="character-fallback"
+            style="display:none;">
+            🗡️
+        </div>
+
+        <div class="character-info">
+
+            <div
+                class="character-name"
+                id="soloCharacterName">
+                Sung Jin-Woo
+            </div>
+
+            <div
+                class="character-speech"
+                id="soloSpeech">
+                El Sistema te ha concedido una oportunidad.
+            </div>
+
+        </div>
+
+    </div>
+
+    <div
+        class="question"
+        id="soloQuestion">
+    </div>
+
+    <div
+        class="answers"
+        id="soloAnswers">
+    </div>
+
+    <div
+        class="feedback"
+        id="soloQuizFeedback">
+    </div>
+
+</div>
+
+<button class="continue" id="soloContinue">
+    Volver al mapa →
+</button>
+
+
+
+</div></section><!-- =====================================================
+     FINAL
+===================================================== --><section id="final" class="screen"><div class="final"><div class="final-cake">
+    🎂
+</div>
+
+<h1>
+    ¡MISIÓN COMPLETADA!
+</h1>
+
+<h2>
+    Te amo , Dani 💗 (Esto es 2/3 regalos)
+</h2>
+
+<div class="letter">
+
+    Dani,
+
+    <br><br>
+
+    hoy no quería simplemente decirte
+    “feliz cumpleaños”.
+
+    <br>
+
+    Quería hacerte algo que fuera
+    solamente tuyo. 💗
+
+    <br><br>
+
+    Entre juegos, risas, noches hablando,
+    kilómetros y todas esas casualidades
+    que nos terminaron llevando otra vez
+    hasta acá...
+
+    <br><br>
+
+    terminaste convirtiéndote en una
+    persona demasiado importante para mí.
+
+    <br><br>
+
+    Gracias por existir.
+
+    Literalmente ya te necesitaba en mi vida, te tardaste pero bueno
+    igual sos especial para mí, hoy y siempre. 
+
+    <br><br>
+
+    Espero que de ahora en adelante puedas estar mejor 
+    que ayer, sos tan importante para mí, inventé un juego 
+    exclusivamente para vos, quizás parezca poco pero llevo más 
+    de un mes haciendo esto y tdo porque sos el amor de mi vida.
+    
+    <br><br>
+
+    Y si alguna vez volvés a sentir que
+    estás sola en tu aventura...
+
+    <br>
+
+    acordate de que hay alguien que
+    siempre va a querer caminar y luchar
+    un poquito más con vos.
+
+    <br><br>
+
+    <strong>
+        Feliz cumpleaños, mi amor. Te amoooooooo ❤️
+    </strong>
+
+</div>
+
+<button
+    class="restart"
+    id="restart">
+    🔄 Volver a jugar
+</button>
+
+</div></section></main><script>
+
+/* =========================================================
+   🌸 PARTÍCULAS
+========================================================= */
+
+const particleContainer =
+    document.getElementById("particles");
+
+const particleSymbols=[
+    "🌸",
+    "💗",
+    "✨",
+    "🍀",
+    "♡"
+];
+
+for(let i=0;i<35;i++){
+
+    const particle=document.createElement("div");
+
+    particle.className="particle";
+
+    particle.textContent=
+        particleSymbols[
+            Math.floor(
+                Math.random()*particleSymbols.length
+            )
+        ];
+
+    particle.style.left=
+        Math.random()*100+"%";
+
+    particle.style.animationDuration=
+        (5+Math.random()*8)+"s";
+
+    particle.style.animationDelay=
+        (-Math.random()*10)+"s";
+
+    particle.style.fontSize=
+        (12+Math.random()*18)+"px";
+
+    particleContainer.appendChild(particle);
+}
+
+
+/* =========================================================
+   🎮 PANTALLAS
+========================================================= */
+
+const screens=document.querySelectorAll(".screen");
+
+function showScreen(id){
+
+    screens.forEach(screen=>{
+        screen.classList.remove("active");
+    });
+
+    document.getElementById(id)
+        .classList.add("active");
+
+    window.scrollTo({
+        top:0,
+        behavior:"smooth"
+    });
+}
+
+
+/* =========================================================
+   INTRO
+========================================================= */
+
+document.getElementById("start")
+.addEventListener("click",()=>{
+    showScreen("map");
+});
+
+
+/* =========================================================
+   🗺️ MUNDOS
+========================================================= */
+
+let worldCompleted={
+    world1:false,
+    world2:false,
+    world3:false,
+    world4:false
+};
+
+function unlockWorld(id){
+
+    const world=document.getElementById(id);
+
+    world.classList.remove("locked");
+
+    const lock=world.querySelector(".lock");
+
+    if(lock) lock.remove();
+}
+
+function completeWorld(id){
+
+    worldCompleted[id]=true;
+
+    const world=document.getElementById(id);
+
+    world.classList.add("completed");
+
+    if(id==="world1")
+        unlockWorld("world2");
+
+    if(id==="world2")
+        unlockWorld("world3");
+
+    if(id==="world3")
+        unlockWorld("world4");
+}
+
+
+/* =========================================================
+   CLICK MUNDOS
+========================================================= */
+
+document.getElementById("world1")
+.addEventListener("click",()=>{
+    showScreen("kimetsu");
+    startPetalGame();
+});
+
+document.getElementById("world2")
+.addEventListener("click",function(){
+
+    if(this.classList.contains("locked")) return;
+
+    showScreen("clover");
+
+});
+
+document.getElementById("world3")
+.addEventListener("click",function(){
+
+    if(this.classList.contains("locked")) return;
+
+    showScreen("solo");
+
+});
+
+document.getElementById("world4")
+.addEventListener("click",function(){
+
+    if(this.classList.contains("locked")) return;
+
+    showScreen("final");
+
+});
+
+
+/* =========================================================
+   🌸 KIMETSU — PÉTALOS
+========================================================= */
+
+let petals=0;
+let petalTimer;
+
+function startPetalGame(){
+
+    const area=document.getElementById("petalArea");
+
+    const score=document.getElementById("petalScore");
+
+    const feedback=document.getElementById("petalFeedback");
+
+    if(worldCompleted.world1){
+
+        feedback.textContent=
+            "Misión completada 🌸";
+
+        return;
+
+    }
+
+    petals=0;
+
+    score.textContent="Pétalos: 0 / 7";
+
+    area.innerHTML="";
+
+    document.getElementById("kimetsuQuiz")
+        .style.display="none";
+
+    document.getElementById("kimetsuContinue")
+        .style.display="none";
+
+    clearInterval(petalTimer);
+
+    function createPetal(){
+
+        if(petals>=16) return;
+
+        const petal=document.createElement("div");
+
+        petal.className="petal";
+
+        petal.textContent="🌸";
+
+        petal.style.left=
+            Math.random()*85+"%";
+
+        petal.style.top=
+            Math.random()*80+"%";
+
+        petal.addEventListener("click",function(){
+
+            petals++;
+
+            score.textContent=
+                `Pétalos: ${petals} / 7`;
+
+            petal.remove();
+
+            if(petals>=7){
+
+                clearInterval(petalTimer);
+
+                feedback.textContent=
+                    "¡Los pétalos están completos! Ahora comienza la prueba de los cazadores. 🌸⚔️";
+
+                document.getElementById("kimetsuQuiz")
+                    .style.display="block";
+
+                startKimetsuQuiz();
+
+            }
+
+        });
+
+        area.appendChild(petal);
+    }
+
+    createPetal();
+
+    petalTimer=setInterval(
+        createPetal,
+        700
+    );
+}
+
+
+/* =========================================================
+   🌸 KIMETSU QUIZ
+========================================================= */
+
+const kimetsuQuestions=[
+
+    {
+        character:"tanjiro.png",
+        fallback:"⚔️",
+        name:"Tanjiro",
+        speech:"Dani, una misión no se abandona a mitad de camino y lo sabes.",
+        question:"¿Quién es la hermana de Tanjiro?",
+        answers:[
+            "Nezuko",
+            "Mitsuri",
+            "Shinobu"
+        ],
+        correct:0
+    },
+
+    {
+        character:"nezuko.png",
+        fallback:"🎋",
+        name:"Nezuko",
+        speech:"Mmm... ¡mmm! 🎋💗",
+        question:"¿Qué lleva Nezuko normalmente en la boca?",
+        answers:[
+            "Una flor",
+            "Un bambú",
+            "Nada"
+        ],
+        correct:1
+    },
+
+    {
+        character:"rengoku.png",
+        fallback:"🔥",
+        name:"Rengoku",
+        speech:"¡Una última prueba y lo habrás conseguido! ",
+        question:"¿Cuál es el estilo de respiración de Rengoku?",
+        answers:[
+            "Respiración de la Llama",
+            "Respiración del Agua",
+            "Respiración del Amor"
+        ],
+        correct:0
+    }
+
+];
+
+let kimetsuIndex=0;
+
+function startKimetsuQuiz(){
+
+    kimetsuIndex=0;
+
+    renderKimetsuQuestion();
+}
+
+function renderKimetsuQuestion(){
+
+    const q=kimetsuQuestions[kimetsuIndex];
+
+    document.getElementById("kimetsuQuestionNumber")
+        .textContent=
+        `PREGUNTA ${kimetsuIndex+1} / ${kimetsuQuestions.length}`;
+
+    const image=document.getElementById("kimetsuCharacter");
+
+    const fallback=document.getElementById("kimetsuFallback");
+
+    image.style.display="block";
+
+    fallback.style.display="none";
+
+    image.src="personajes/"+q.character;
+
+    image.onerror=function(){
+
+        image.style.display="none";
+        fallback.style.display="flex";
+        fallback.textContent=q.fallback;
+
+    };
+
+    document.getElementById("kimetsuCharacterName")
+        .textContent=q.name;
+
+    document.getElementById("kimetsuSpeech")
+        .textContent=q.speech;
+
+    document.getElementById("kimetsuQuestion")
+        .textContent=q.question;
+
+    const answers=document.getElementById("kimetsuAnswers");
+
+    answers.innerHTML="";
+
+    document.getElementById("kimetsuQuizFeedback")
+        .textContent="";
+
+    q.answers.forEach((answer,index)=>{
+
+        const button=document.createElement("button");
+
+        button.className="answer";
+
+        button.textContent=answer;
+
+        button.addEventListener("click",()=>{
+
+            [...answers.children].forEach(b=>{
+                b.disabled=true;
+            });
+
+            if(index===q.correct){
+
+                button.classList.add("good");
+
+                document.getElementById("kimetsuQuizFeedback")
+                    .textContent=
+                    "✨ ¡Correcto! viste que sos la mejor.";
+
+                setTimeout(()=>{
+
+                    kimetsuIndex++;
+
+                    if(kimetsuIndex<
+                        kimetsuQuestions.length){
+
+                        renderKimetsuQuestion();
+
+                    }else{
+
+                        finishKimetsuQuiz();
+
+                    }
+
+                },850);
+
+            }else{
+
+                button.classList.add("bad");
+
+                document.getElementById("kimetsuQuizFeedback")
+                    .textContent=
+                    "❌ No pasa nada. Probá otra vez.";
+
+                [...answers.children].forEach(b=>{
+                    if(
+                        [...answers.children].indexOf(b)
+                        ===q.correct
+                    ){
+                        b.classList.add("good");
+                    }
+                });
+
+                setTimeout(()=>{
+
+                    [...answers.children].forEach(b=>{
+                        b.disabled=false;
+                        b.classList.remove("bad");
+                    });
+
+                },900);
+
+            }
+
+        });
+
+        answers.appendChild(button);
+
+    });
+
+}
+
+function finishKimetsuQuiz(){
+
+    document.getElementById("kimetsuQuizFeedback")
+        .textContent=
+        "🌸 ¡KIMETSU WORLD COMPLETADO! Rengoku reconoce tu fuerza.";
+
+    completeWorld("world1");
+
+    document.getElementById("kimetsuContinue")
+        .style.display="block";
+}
+
+document.getElementById("kimetsuContinue")
+.addEventListener("click",()=>{
+    showScreen("map");
+});
+
+
+/* =========================================================
+   🍀 BLACK CLOVER
+========================================================= */
+
+let cloverStarted=false;
+
+document.getElementById("grimoire")
+.addEventListener("click",function(){
+
+    if(cloverStarted) return;
+
+    cloverStarted=true;
+
+    document.getElementById("magicText")
+        .textContent=
+        "🍀 ¡El grimorio te eligió! Ahora empieza la prueba.";
+
+    this.textContent="✨🍀✨";
+
+    document.getElementById("cloverQuiz")
+        .style.display="block";
+
+    startCloverQuiz();
+});
+
+
+const cloverQuestions=[
+
+    {
+        character:"asta.png",
+        fallback:"⚔️",
+        name:"Asta",
+        speech:"¡DANII! ¡No importa cuánto cueste, NO TE RINDAS!",
+        question:"¿Cuál es el sueño de Asta?",
+        answers:[
+            "Ser el Rey Mago",
+            "Ser capitán pirata",
+            "Ser un cazador"
+        ],
+        correct:0
+    },
+
+    {
+        character:"yuno.png",
+        fallback:"🌪️",
+        name:"Yuno",
+        speech:"No te distraigas. Todavía queda una prueba.",
+        question:"¿Qué tipo de magia utiliza principalmente Yuno?",
+        answers:[
+            "Fuego",
+            "Viento",
+            "Agua"
+        ],
+        correct:1
+    },
+
+    {
+        character:"asta.png",
+        fallback:"🍀",
+        name:"Asta",
+        speech:"¡¡ÚLTIMA PREGUNTA!! ¡Dale con todo!",
+        question:"¿Qué objeto reciben Asta y Yuno al llegar a cierta etapa de su entrenamiento?",
+        answers:[
+            "Un grimorio",
+            "Una corona",
+            "Una máscara"
+        ],
+        correct:0
+    }
+
+];
+
+let cloverIndex=0;
+
+function startCloverQuiz(){
+
+    cloverIndex=0;
+
+    renderCloverQuestion();
+}
+
+function renderCloverQuestion(){
+
+    const q=cloverQuestions[cloverIndex];
+
+    document.getElementById("cloverQuestionNumber")
+        .textContent=
+        `PREGUNTA ${cloverIndex+1} / ${cloverQuestions.length}`;
+
+    const image=document.getElementById("cloverCharacter");
+
+    const fallback=document.getElementById("cloverFallback");
+
+    image.style.display="block";
+    fallback.style.display="none";
+
+    image.src="personajes/"+q.character;
+
+    image.onerror=function(){
+
+        image.style.display="none";
+        fallback.style.display="flex";
+        fallback.textContent=q.fallback;
+
+    };
+
+    document.getElementById("cloverCharacterName")
+        .textContent=q.name;
+
+    document.getElementById("cloverSpeech")
+        .textContent=q.speech;
+
+    document.getElementById("cloverQuestion")
+        .textContent=q.question;
+
+    const answers=document.getElementById("cloverAnswers");
+
+    answers.innerHTML="";
+
+    document.getElementById("cloverQuizFeedback")
+        .textContent="";
+
+    q.answers.forEach((answer,index)=>{
+
+        const button=document.createElement("button");
+
+        button.className="answer";
+
+        button.textContent=answer;
+
+        button.addEventListener("click",()=>{
+
+            [...answers.children].forEach(b=>{
+                b.disabled=true;
+            });
+
+            if(index===q.correct){
+
+                button.classList.add("good");
+
+                document.getElementById("cloverQuizFeedback")
+                    .textContent=
+                    "🍀 ¡Correcto! ¡La magia respondió a tu favor!";
+
+                setTimeout(()=>{
+
+                    cloverIndex++;
+
+                    if(cloverIndex<
+                        cloverQuestions.length){
+
+                        renderCloverQuestion();
+
+                    }else{
+
+                        finishCloverQuiz();
+
+                    }
+
+                },850);
+
+            }else{
+
+                button.classList.add("bad");
+
+                document.getElementById("cloverQuizFeedback")
+                    .textContent=
+                    "❌ No era esa. Asta dice que lo intentes otra vez.";
+
+                [...answers.children].forEach(b=>{
+                    if(
+                        [...answers.children].indexOf(b)
+                        ===q.correct
+                    ){
+                        b.classList.add("good");
+                    }
+                });
+
+                setTimeout(()=>{
+
+                    [...answers.children].forEach(b=>{
+                        b.disabled=false;
+                        b.classList.remove("bad");
+                    });
+
+                },900);
+
+            }
+
+        });
+
+        answers.appendChild(button);
+
+    });
+
+}
+
+function finishCloverQuiz(){
+
+    document.getElementById("cloverQuizFeedback")
+        .textContent=
+        "🍀 ¡BLACK CLOVER WORLD COMPLETADO! Asta y Yuno reconocen tu magia.";
+
+    completeWorld("world2");
+
+    document.getElementById("cloverContinue")
+        .style.display="block";
+}
+
+document.getElementById("cloverContinue")
+.addEventListener("click",()=>{
+    showScreen("map");
+});
+
+
+/* =========================================================
+   🗡️ SOLO LEVELING
+========================================================= */
+
+let enemyHP=100;
+let playerLevel=23;
+
+const enemy=document.getElementById("enemy");
+const hpBar=document.getElementById("enemyHP");
+const soloLevel=document.getElementById("soloLevel");
+const soloFeedback=document.getElementById("soloFeedback");
+
+enemy.addEventListener("click",function(){
+
+    if(enemyHP<=0) return;
+
+    enemyHP-=20;
+
+    if(enemyHP<0)
+        enemyHP=0;
+
+    hpBar.style.width=enemyHP+"%";
+
+    enemy.classList.add("hit");
+
+    setTimeout(()=>{
+        enemy.classList.remove("hit");
+    },120);
+
+    if(enemyHP===0){
+
+        playerLevel++;
+
+        soloLevel.textContent=playerLevel;
+
+        document.getElementById("mapLevel")
+            .textContent=playerLevel;
+
+        enemy.textContent="💀";
+
+        soloFeedback.textContent=
+            "SISTEMA: enemigo derrotado. LEVEL UP ✨";
+
+        document.getElementById("soloQuiz")
+            .style.display="block";
+
+        startSoloQuiz();
+
+    }else{
+
+        soloFeedback.textContent=
+            "¡Ataque realizado! ⚔️";
+
+    }
+
+});
+
+
+const soloQuestions=[
+
+    {
+        character:"jinwoo.png",
+        fallback:"🗡️",
+        name:"Jin-Woo",
+        speech:"El Sistema observa cada decisión. Easy, verdad?",
+        question:"¿Cómo se llama el protagonista de Solo Leveling?",
+        answers:[
+            "Jin-Woo",
+            "Yoo Jinho",
+            "Go Gunhee"
+        ],
+        correct:0
+    },
+
+    {
+        character:"igris.png",
+        fallback:"🛡️",
+        name:"Igris",
+        speech:"La fuerza no es suficiente. También necesitás determinación.",
+        question:"¿Qué es Igris?",
+        answers:[
+            "Un dragón",
+            "Un soldado de sombra",
+            "Un mago"
+        ],
+        correct:1
+    },
+
+    {
+        character:"beru.png",
+        fallback:"👑",
+        name:"Beru",
+        speech:"KEHEHE... última pregunta.",
+        question:"¿Qué ejército utiliza Jin-Woo para luchar?",
+        answers:[
+            "El ejército de sombras",
+            "Las Fuerzas Armadas de Eldia",
+            "El Imperio Galáctico"
+        ],
+        correct:0
+    }
+
+];
+
+let soloIndex=0;
+
+function startSoloQuiz(){
+
+    soloIndex=0;
+
+    renderSoloQuestion();
+}
+
+function renderSoloQuestion(){
+
+    const q=soloQuestions[soloIndex];
+
+    document.getElementById("soloQuestionNumber")
+        .textContent=
+        `PREGUNTA ${soloIndex+1} / ${soloQuestions.length}`;
+
+    const image=document.getElementById("soloCharacter");
+
+    const fallback=document.getElementById("soloFallback");
+
+    image.style.display="block";
+    fallback.style.display="none";
+
+    image.src="personajes/"+q.character;
+
+    image.onerror=function(){
+
+        image.style.display="none";
+        fallback.style.display="flex";
+        fallback.textContent=q.fallback;
+
+    };
+
+    document.getElementById("soloCharacterName")
+        .textContent=q.name;
+
+    document.getElementById("soloSpeech")
+        .textContent=q.speech;
+
+    document.getElementById("soloQuestion")
+        .textContent=q.question;
+
+    const answers=document.getElementById("soloAnswers");
+
+    answers.innerHTML="";
+
+    document.getElementById("soloQuizFeedback")
+        .textContent="";
+
+    q.answers.forEach((answer,index)=>{
+
+        const button=document.createElement("button");
+
+        button.className="answer";
+
+        button.textContent=answer;
+
+        button.addEventListener("click",()=>{
+
+            [...answers.children].forEach(b=>{
+                b.disabled=true;
+            });
+
+            if(index===q.correct){
+
+                button.classList.add("good");
+
+                document.getElementById("soloQuizFeedback")
+                    .textContent=
+                    "✨ SISTEMA: respuesta correcta.";
+
+                setTimeout(()=>{
+
+                    soloIndex++;
+
+                    if(soloIndex<
+                        soloQuestions.length){
+
+                        renderSoloQuestion();
+
+                    }else{
+
+                        finishSoloQuiz();
+
+                    }
+
+                },850);
+
+            }else{
+
+                button.classList.add("bad");
+
+                document.getElementById("soloQuizFeedback")
+                    .textContent=
+                    "❌ SISTEMA: respuesta incorrecta. Intentá nuevamente.";
+
+                [...answers.children].forEach(b=>{
+                    if(
+                        [...answers.children].indexOf(b)
+                        ===q.correct
+                    ){
+                        b.classList.add("good");
+                    }
+                });
+
+                setTimeout(()=>{
+
+                    [...answers.children].forEach(b=>{
+                        b.disabled=false;
+                        b.classList.remove("bad");
+                    });
+
+                },900);
+
+            }
+
+        });
+
+        answers.appendChild(button);
+
+    });
+
+}
+
+function finishSoloQuiz(){
+
+    document.getElementById("soloQuizFeedback")
+        .textContent=
+        "🗡️ ¡SHADOW WORLD COMPLETADO! El Sistema reconoce tu nuevo nivel.";
+
+    completeWorld("world3");
+
+    document.getElementById("soloContinue")
+        .style.display="block";
+}
+
+document.getElementById("soloContinue")
+.addEventListener("click",()=>{
+    showScreen("map");
+});
+
+/* =========================================================
+   🎵 SS501
+========================================================= */
+
+const song = document.getElementById("song");
+const musicButton = document.getElementById("musicButton");
+const musicNote = document.getElementById("musicNote");
+
+let musicStarted = false;
+
+musicButton.addEventListener("click", function () {
+
+    if (song.paused) {
+
+        song.play()
+            .then(() => {
+
+                musicButton.textContent = "⏸ PAUSAR";
+                musicNote.textContent = "🎵";
+
+                if (!musicStarted) {
+
+                    musicStarted = true;
+
+                    document.getElementById("musicQuiz")
+                        .style.display = "block";
+
+                    startMusicQuiz();
+
+                }
+
+            })
+            .catch((error) => {
+
+                console.error("Error al reproducir la canción:", error);
+
+                alert(
+                    "No se pudo reproducir la canción. Error: " +
+                    error.message +
+                    "\nRevisá el nombre del archivo y su ubicación."
+                );
+
+            });
+
+    } else {
+
+        song.pause();
+
+        musicButton.textContent = "▶ REPRODUCIR";
+        musicNote.textContent = "♪";
+
+    }
+
+});
+
+
+const musicQuestions=[
+
+    {
+        question:"¿Qué banda está relacionada con esta habitación?",
+        answers:[
+            "SS501",
+            "BLACKPINK",
+            "EXO"
+        ],
+        correct:0
+    },
+
+    {
+        question:"¿Para quién se preparó esta aventura?",
+        answers:[
+            "Para Dani 💗",
+            "Para el Sistema",
+            "Para Asta"
+        ],
+        correct:0
+    }
+
+];
+
+let musicIndex=0;
+
+function startMusicQuiz(){
+
+    musicIndex=0;
+
+    renderMusicQuestion();
+}
+
+function renderMusicQuestion(){
+
+    const q=musicQuestions[musicIndex];
+
+    document.getElementById("musicQuestion")
+        .textContent=q.question;
+
+    const answers=document.getElementById("musicAnswers");
+
+    answers.innerHTML="";
+
+    document.getElementById("musicFeedback")
+        .textContent="";
+
+    q.answers.forEach((answer,index)=>{
+
+        const button=document.createElement("button");
+
+        button.className="answer";
+
+        button.textContent=answer;
+
+        button.addEventListener("click",()=>{
+
+            [...answers.children].forEach(b=>{
+                b.disabled=true;
+            });
+
+            if(index===q.correct){
+
+                button.classList.add("good");
+
+                document.getElementById("musicFeedback")
+                    .textContent=
+                    "💗 Correcto. Ya casi llegamos al final.";
+
+                setTimeout(()=>{
+
+                    musicIndex++;
+
+                    if(musicIndex<
+                        musicQuestions.length){
+
+                        renderMusicQuestion();
+
+                    }else{
+
+                        finishMusicQuiz();
+
+                    }
+
+                },850);
+
+            }else{
+
+                button.classList.add("bad");
+
+                document.getElementById("musicFeedback")
+                    .textContent=
+                    "❌ Mmm... intentá otra vez.";
+
+                setTimeout(()=>{
+
+                    [...answers.children].forEach(b=>{
+                        b.disabled=false;
+                        b.classList.remove("bad");
+                    });
+
+                },900);
+
+            }
+
+        });
+
+        answers.appendChild(button);
+
+    });
+
+}
+
+function finishMusicQuiz(){
+    completeWorld("world4");
+    showScreen("final");
+}
+
+
+/* =========================================================
+   💗 REINICIAR
+========================================================= */
+
+document.getElementById("restart")
+.addEventListener("click",function(){
+
+    worldCompleted={
+        world1:false,
+        world2:false,
+        world3:false,
+        world4:false
+    };
+
+    [
+        "world2",
+        "world3",
+        "world4"
+    ].forEach(id=>{
+
+        document.getElementById(id)
+            .classList.add("locked");
+
+    });
+
+    const world2=document.getElementById("world2");
+    const world3=document.getElementById("world3");
+    const world4=document.getElementById("world4");
+
+    [world2,world3,world4].forEach(world=>{
+
+        if(!world.querySelector(".lock")){
+
+            const lock=document.createElement("div");
+
+            lock.className="lock";
+
+            lock.textContent="🔒";
+
+            world.appendChild(lock);
+
+        }
+
+    });
+
+    ["world1","world2","world3","world4"]
+    .forEach(id=>{
+
+        document.getElementById(id)
+            .classList.remove("completed");
+
+    });
+
+    enemyHP=100;
+    hpBar.style.width="100%";
+
+    playerLevel=23;
+    soloLevel.textContent="23";
+    document.getElementById("mapLevel")
+        .textContent="23";
+
+    enemy.textContent="👹";
+
+    song.pause();
+    song.currentTime=0;
+
+    musicButton.textContent="▶ REPRODUCIR";
+    musicNote.textContent="♪";
+
+    cloverStarted=false;
+    musicStarted=false;
+
+    document.getElementById("kimetsuQuiz")
+        .style.display="none";
+
+    document.getElementById("cloverQuiz")
+        .style.display="none";
+
+    document.getElementById("soloQuiz")
+        .style.display="none";
+
+    document.getElementById("musicQuiz")
+        .style.display="none";
+
+    document.getElementById("kimetsuContinue")
+        .style.display="none";
+
+    document.getElementById("cloverContinue")
+        .style.display="none";
+
+    document.getElementById("soloContinue")
+        .style.display="none";
+
+    document.getElementById("musicContinue")
+        .style.display="none";
+
+    showScreen("intro");
+
+});
+
+</script></body>
+</html>
